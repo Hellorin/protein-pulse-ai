@@ -92,8 +92,7 @@ The application can be configured through `application.properties` or environmen
 ```properties
 # OpenAI Configuration
 spring.ai.openai.api-key=${SPRING_AI_OPENAI_API_KEY}
-
-- `spring.ai.openai.api-key`: Your OpenAI API key
+```
 
 ## API Usage
 
