@@ -1,5 +1,7 @@
 package io.hellorin.proteinpulseai.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,8 @@ import java.util.stream.Stream;
 @Service
 public class MathService {
 
+    private static final Logger logger = LoggerFactory.getLogger(MathService.class);
+
     /**
      * Adds all the provided double numbers and returns the sum formatted to 2 decimal places.
      * This method is annotated with @Tool to be used as a Spring AI tool.
@@ -25,8 +29,9 @@ public class MathService {
      * @param numbers Variable number of double values to be added
      * @return String representation of the sum formatted to 2 decimal places, or "0.00" if no numbers provided
      */
-    @Tool(description = "Add all double passed in parameters")
-    public String addAll(Double... numbers) {
+    @Tool(description = "Sum all double passed in parameters")
+    public String sumAll(Double... numbers) {
+        logger.info("Tool sumAll called with parameters - numbers: {}", (Object) numbers);
         return Stream.of(numbers).reduce(Double::sum).map(sum -> String.format("%.2f", sum)).orElse("0.00");
     }
 }

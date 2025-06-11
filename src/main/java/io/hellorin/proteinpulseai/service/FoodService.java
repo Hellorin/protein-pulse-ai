@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.hellorin.proteinpulseai.model.FoodItem;
 import io.hellorin.proteinpulseai.model.FoodItemList;
 import io.hellorin.proteinpulseai.repository.NutritionRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
@@ -25,6 +27,8 @@ import java.util.Optional;
  */
 @Service
 public class FoodService {
+
+    private static final Logger logger = LoggerFactory.getLogger(FoodService.class);
     private final ChatModel chatModel;
     private final OpenAiChatOptions options;
     private final NutritionRepository nutritionRepository;
@@ -50,6 +54,7 @@ public class FoodService {
      */
     @Tool(name = "findFoodItemsByNames", description = "Find food items by their names")
     public Optional<String> findFoodItemsByNames(String names) throws JsonProcessingException {
+        logger.info("Tool findFoodItemsByNames called with parameters - names: {}", names);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 

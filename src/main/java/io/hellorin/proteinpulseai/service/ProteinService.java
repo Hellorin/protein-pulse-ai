@@ -45,6 +45,7 @@ public class ProteinService {
      */
     @Tool(name = "findProteinQuantityInFoodItem", description = "Find the quantity of pure protein a in food item")
     public String findProteinQuantityInFoodItem(String foodItemCode, Integer quantityInGrams) {
+        logger.info("Tool findProteinQuantityInFoodItem called with parameters - foodItemCode: {}, quantityInGrams: {}", foodItemCode, quantityInGrams);
         if (nutritionRepository.getProteinCompositions().containsKey(foodItemCode)) {
             String amount = nutritionRepository.getProteinCompositions().get(foodItemCode).getTeneur().replace(",", ".").trim().strip();
             double result = (quantityInGrams.doubleValue() / 100.0) * Double.parseDouble(amount);
