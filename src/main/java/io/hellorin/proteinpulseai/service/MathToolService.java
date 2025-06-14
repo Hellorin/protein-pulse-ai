@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 @Service
 public class MathToolService {
 
-    private static final Logger logger = LoggerFactory.getLogger(MathToolService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MathToolService.class);
 
     /**
      * Adds all the provided double numbers and returns the sum formatted to 2 decimal places.
@@ -31,7 +31,7 @@ public class MathToolService {
      */
     @Tool(description = "Sum all double passed in parameters")
     public String sumAll(Double... numbers) {
-        logger.info("Tool sumAll called with parameters - numbers: {}", (Object) numbers);
+        LOGGER.info("Tool sumAll called with parameters - numbers: {}", (Object) numbers);
         return Stream.of(numbers).reduce(Double::sum).map(sum -> String.format("%.2f", sum)).orElse("0.00");
     }
 }

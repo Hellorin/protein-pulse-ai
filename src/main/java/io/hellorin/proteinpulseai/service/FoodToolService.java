@@ -13,11 +13,13 @@ import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -27,8 +29,30 @@ import java.util.Optional;
  */
 @Service
 public class FoodToolService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(FoodToolService.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(FoodToolService.class);
+    private static final String FOOD_ITEM_QUERY_SYSTEM_PROMPT = """
+            You are a helpful AI assistant specialized in finding a object from a list of objects in json format based on the attribute 'alim_nom_eng'.
+            
+            The structure is as follow:
+            <structure>
+            
+            If I search for 'chickens', It would return the code 'code1' for example.
+            """;
+
+    private static final String FOOD_ITEM_QUERY_PROMPT = """
+                Here is the data to find the food code from:
+                <data>
+                
+                And the food we are looking for are '<food>'
+                
+                As an additional rule, if the food is 'egg', get the code for 'egg' ONLY. IGNORE the other codes.
+                
+                Please don't explain your reasoning and only output the code like 'food name:code1' on each line.
+                
+                If you find multiple return only the most relevant one.
+                If you didn't find anything, please return '<NO_ANSWER>'.""";
+
     private final ChatModel chatModel;
     private final OpenAiChatOptions options;
     private final NutritionRepository nutritionRepository;
@@ -54,48 +78,47 @@ public class FoodToolService {
      */
     @Tool(name = "findFoodItemsByName", description = "Find food items by their name")
     public Optional<String> findFoodItemsByName(String name) throws JsonProcessingException {
-        logger.info("Tool findFoodItemsByName called with parameters - names: {}", name);
-        ObjectMapper objectMapper = new ObjectMapper();
+        LOGGER.info("Tool findFoodItemsByName called with parameters - names: {}", name);
+        var objectMapper = new ObjectMapper();
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-        FoodItemList foodItemList = new FoodItemList();
-        FoodItem foodItem1 = new FoodItem("code1", "chicken");
-        FoodItem foodItem2 = new FoodItem("code2", "tofu");
+        var foodItemList = new FoodItemList();
+        var foodItem1 = new FoodItem("code1", "chicken");
+        var foodItem2 = new FoodItem("code2", "tofu");
         foodItemList.setFoodItems(List.of(foodItem1, foodItem2));
 
-        String structure = objectMapper.writeValueAsString(
-                foodItemList.getFoodItems().stream().map(it -> it.getAlimCode() + "|" + it.getAlimNomEng()).toList()
+        var structure = objectMapper.writeValueAsString(
+                foodItemList.getFoodItems().stream()
+                        .map(it -> it.getAlimCode() + "|" + it.getAlimNomEng())
+                        .toList()
         );
 
-        String data = objectMapper.writeValueAsString(
-                this.nutritionRepository.getFoodItems().stream().map(it -> it.getAlimCode() + "|" + it.getAlimNomEng()).toList()
+        var data = objectMapper.writeValueAsString(
+                this.nutritionRepository.getFoodItems().stream()
+                        .map(it -> it.getAlimCode() + "|" + it.getAlimNomEng())
+                        .toList()
         );
 
-        String systemPrompt = """
-            You are a helpful AI assistant specialized in finding a object from a list of objects in json format based on the attribute 'alim_nom_eng'.
-            
-            The structure is as follow:
-            <structure>
-            
-            If I search for 'chickens', It would return the code 'code1' for example.
-            """.replace("<structure>", structure);
-        SystemMessage systemPromptMessage = new SystemMessage(systemPrompt);
-        UserMessage userMessage = new UserMessage("""
-                Here is the data to find the food code from:
-                <data>
-                
-                And the food we are looking for are '<food>'
-                
-                As an additional rule, if the food is 'egg', get the code for 'egg' ONLY. IGNORE the other codes.
-                
-                Please don't explain your reasoning and only output the code like 'food name:code1' on each line.
-                
-                If you find multiple return only the most relevant one.
-                If you didn't find anything, please return '<NO_ANSWER>'.""".replace("<data>", data)
-                .replace("<food>", name)
+        var systemPromptTemplate = new PromptTemplate(FOOD_ITEM_QUERY_SYSTEM_PROMPT);
+        var systemPromptMessage = new SystemMessage(
+                systemPromptTemplate.render(
+                        Map.of(
+                                "<structure>", structure
+                        )
+                )
         );
 
-        String content = ChatClient.create(this.chatModel)
+        var foodItemQueryPrompt = new PromptTemplate(FOOD_ITEM_QUERY_PROMPT);
+        var userMessage = new UserMessage(
+                foodItemQueryPrompt.render(
+                        Map.of(
+                                "<data>", data,
+                                "<food>", name
+                        )
+                )
+        );
+
+        var content = ChatClient.create(this.chatModel)
                 .prompt(new Prompt(systemPromptMessage, userMessage))
                 .options(this.options)
                 .call()

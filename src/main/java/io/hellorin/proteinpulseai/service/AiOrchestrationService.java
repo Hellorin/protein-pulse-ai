@@ -19,7 +19,7 @@ import java.util.Optional;
 @Service
 public class AiOrchestrationService {
 
-    private static final Logger logger = LoggerFactory.getLogger(AiOrchestrationService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AiOrchestrationService.class);
 
     private static final String AGENT_CONTEXT_PROMPT = """
             You are a smart and helpful AI assistant specialized in Human Nutrition.
@@ -94,7 +94,7 @@ public class AiOrchestrationService {
     }
 
     public Pair<String, Boolean> getProteinsAmount(String userInput, Optional<String> optConversationId) {
-        logger.info("Starting protein amount calculation with input: {}", userInput);
+        LOGGER.info("Starting protein amount calculation with input: {}", userInput);
 
         var conversationId = optConversationId.orElse(TESTING_CONV_ID);
 
@@ -133,7 +133,7 @@ public class AiOrchestrationService {
                 .content();
 
         if (isFinal.contains("<END>")) {
-            logger.info("Protein amount calculation completed. Final result: {}", response);
+            LOGGER.info("Protein amount calculation completed. Final result: {}", response);
             chatMemory.clear(conversationId);
         }
 

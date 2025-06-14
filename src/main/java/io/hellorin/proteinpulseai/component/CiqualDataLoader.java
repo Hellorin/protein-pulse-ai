@@ -28,7 +28,7 @@ import java.util.List;
 @Component
 public class CiqualDataLoader implements CommandLineRunner {
 
-    private static final Logger logger = LoggerFactory.getLogger(CiqualDataLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CiqualDataLoader.class);
     private final NutritionRepository nutritionRepository;
 
     public CiqualDataLoader(NutritionRepository nutritionRepository) {
@@ -66,7 +66,7 @@ public class CiqualDataLoader implements CommandLineRunner {
             CompositionTable compositionTable = (CompositionTable) unmarshaller.unmarshal(is);
 
             long endTime = System.currentTimeMillis();
-            logger.info("Loaded {} compo items with const_code 25000 in {} ms", compositionTable.getCompositions().size(), (endTime - startTime));
+            LOGGER.info("Loaded {} compo items with const_code 25000 in {} ms", compositionTable.getCompositions().size(), (endTime - startTime));
 
             return compositionTable.getCompositions();
         }
@@ -91,7 +91,7 @@ public class CiqualDataLoader implements CommandLineRunner {
             List<FoodItem> items = foodItemList.getFoodItems();
             
             long endTime = System.currentTimeMillis();
-            logger.info("Loaded {} food items in {} ms", items.size(), (endTime - startTime));
+            LOGGER.info("Loaded {} food items in {} ms", items.size(), (endTime - startTime));
             
             return items;
         }
