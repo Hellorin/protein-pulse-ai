@@ -75,6 +75,8 @@ public class FoodToolService {
      * @param name A string containing the name of food item to search for
      * @return Optional containing a string of matched food items and their codes, or empty if no matches found
      * @throws JsonProcessingException if there's an error processing JSON data
+     *
+     * TODO: We should use semantic search with embedding, it is too random currently
      */
     @Tool(name = "findFoodItemsByName", description = "Find food items by their name")
     public Optional<String> findFoodItemsByName(String name) throws JsonProcessingException {
