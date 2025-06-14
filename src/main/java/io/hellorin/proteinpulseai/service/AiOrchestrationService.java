@@ -28,7 +28,7 @@ public class AiOrchestrationService {
 
     private static final String PROTEIN_CALCULATION_PROMPT = """
             You are tasked to compute the amount of protein consumed by the user based on its input.
-            The answer should always be formatted in html ONLY. Don't add any other text outside the html. It should human readable.
+            The answer should always be formatted in html ONLY. Don't add any other text outside the html. It should browser-readable.
             
             For that purpose follow these steps carefully:
             1. Extract all the food item and the quantity from the user input.
@@ -36,11 +36,12 @@ public class AiOrchestrationService {
                If the user is talking about eggs, you can assume that one egg usually weight 50gr;
             2. Get the food code for each of the food item.
                If there is mention of "pure protein", "protein shake", use the amount as is: don't look for anything using tools.
-               If you had multiple choices for at least one of the item, please ask the user to be more precise. To help him, please provide of list of the found food items;
+               If you had multiple choices for at least one of the item, please ask the user to be more precise. To help him, please provide of list of the found food item names. Also don't execute the next steps and ask directly for precisions;
             3. Based the food code, get the amount of protein of each food items using their code;
             4. Sum all protein amounts to compute the total amount of protein consumed. If you cannot do it by your own, you can use the sumAll tool;
             6. Begin with an engaging message saying that you can definitely do that calculation for the user. Then summarize and explain how you got this result with a clean and nice answer. You can present the result using a table view if it makes sense to you. Also mentation the source of these numbers being the CIQUAL database (https://ciqual.anses.fr/);
-            5. Finally mention that the user should drink enough water, and to not forget to take Vitamin C/B supplements as well as minerals supplements
+            5. Mention that the user should drink enough water, and to not forget to take Vitamin C/B supplements as well as minerals supplements;
+            6. Finally, take a step back, read again your response and make sure that all the needed information are provided;
             """;
 
     private static final String REWRITE_QUESTION_PROMPT = """

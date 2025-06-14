@@ -48,7 +48,7 @@ public class FoodToolService {
      * This method uses an AI model to match food names against a database of food items
      * and returns their corresponding codes.
      *
-     * @param names A string containing the names of food items to search for
+     * @param name A string containing the name of food item to search for
      * @return Optional containing a string of matched food items and their codes, or empty if no matches found
      * @throws JsonProcessingException if there's an error processing JSON data
      */
@@ -86,9 +86,11 @@ public class FoodToolService {
                 
                 And the food we are looking for are '<food>'
                 
+                As an additional rule, if the food is 'egg', get the code for 'egg' ONLY. IGNORE the other codes.
+                
                 Please don't explain your reasoning and only output the code like 'food name:code1' on each line.
                 
-                IF you find multiple
+                If you find multiple return only the most relevant one.
                 If you didn't find anything, please return '<NO_ANSWER>'.""".replace("<data>", data)
                 .replace("<food>", name)
         );

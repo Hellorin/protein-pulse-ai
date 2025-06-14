@@ -6,6 +6,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Optional;
 
@@ -18,27 +20,14 @@ public class WebController {
         this.aiOrchestrationService = aiOrchestrationService;
     }
 
-    @GetMapping("/")
-    public String home() {
-        return "index";
+    @PostMapping("/api/ask")
+    @ResponseBody
+    public ChatResponse askQuestionApi(@RequestBody QuestionRequest request) {
+        var response = aiOrchestrationService.getProteinsAmount(request.question(), Optional.ofNullable(request.conversationId()));
+        return new ChatResponse(response.getLeft(), response.getRight());
     }
 
-    @GetMapping("/chat")
-    public String chat(@RequestParam(required = false) String question, Model model) {
-        if (question != null) {
-            model.addAttribute("question", question);
-        }
-        model.addAttribute("conversationFinished", false);
-        return "chat";
-    }
-
-    @PostMapping("/ask")
-    public String askQuestion(@RequestParam String question, @RequestParam(required = false) String conversationId, Model model) {
-        var response = aiOrchestrationService.getProteinsAmount(question, Optional.ofNullable(conversationId));
-        boolean isFinished = response.getRight();
-        model.addAttribute("question", question);
-        model.addAttribute("response", response.getLeft());
-        model.addAttribute("conversationFinished", isFinished);
-        return "chat";
-    }
+    public record QuestionRequest(String question, String conversationId) {}
+    
+    public record ChatResponse(String message, boolean conversationFinished) {}
 } 

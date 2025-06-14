@@ -23,7 +23,7 @@ class ProteinToolServiceTest {
     private ProteinToolService proteinToolService;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         proteinToolService = new ProteinToolService(nutritionRepository);
     }
 
