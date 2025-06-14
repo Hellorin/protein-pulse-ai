@@ -16,19 +16,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ProteinServiceTest {
-
-    @Mock
-    private ChatModel chatModel;
-
+class ProteinToolServiceTest {
     @Mock
     private NutritionRepository nutritionRepository;
 
-    private ProteinService proteinService;
+    private ProteinToolService proteinToolService;
 
     @BeforeEach
     void setUp() throws Exception {
-        proteinService = new ProteinService(chatModel, nutritionRepository);
+        proteinToolService = new ProteinToolService(nutritionRepository);
     }
 
     @Test
@@ -44,7 +40,7 @@ class ProteinServiceTest {
         when(nutritionRepository.getProteinCompositions()).thenReturn(proteinCompositions);
 
         // Act
-        String result = proteinService.findProteinQuantityInFoodItem(foodItemCode, quantityInGrams);
+        String result = proteinToolService.findProteinQuantityInFoodItem(foodItemCode, quantityInGrams);
 
         // Assert
         assertThat(result).isEqualTo("51.00");
@@ -60,7 +56,7 @@ class ProteinServiceTest {
         when(nutritionRepository.getProteinCompositions()).thenReturn(proteinCompositions);
 
         // Act
-        String result = proteinService.findProteinQuantityInFoodItem(foodItemCode, quantityInGrams);
+        String result = proteinToolService.findProteinQuantityInFoodItem(foodItemCode, quantityInGrams);
 
         // Assert
         assertThat(result).isEqualTo("0.00");
@@ -79,7 +75,7 @@ class ProteinServiceTest {
         when(nutritionRepository.getProteinCompositions()).thenReturn(proteinCompositions);
 
         // Act
-        String result = proteinService.findProteinQuantityInFoodItem(foodItemCode, quantityInGrams);
+        String result = proteinToolService.findProteinQuantityInFoodItem(foodItemCode, quantityInGrams);
 
         // Assert
         assertThat(result).isEqualTo("0.00");

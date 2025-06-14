@@ -26,14 +26,14 @@ import java.util.Optional;
  * It integrates with a nutrition repository and uses Spring AI for natural language processing tasks.
  */
 @Service
-public class FoodService {
+public class FoodToolService {
 
-    private static final Logger logger = LoggerFactory.getLogger(FoodService.class);
+    private static final Logger logger = LoggerFactory.getLogger(FoodToolService.class);
     private final ChatModel chatModel;
     private final OpenAiChatOptions options;
     private final NutritionRepository nutritionRepository;
 
-    public FoodService(ChatModel chatModel, NutritionRepository nutritionRepository) {
+    public FoodToolService(ChatModel chatModel, NutritionRepository nutritionRepository) {
         this.chatModel = chatModel;
         this.nutritionRepository = nutritionRepository;
 
@@ -52,15 +52,15 @@ public class FoodService {
      * @return Optional containing a string of matched food items and their codes, or empty if no matches found
      * @throws JsonProcessingException if there's an error processing JSON data
      */
-    @Tool(name = "findFoodItemsByNames", description = "Find food items by their names")
-    public Optional<String> findFoodItemsByNames(String names) throws JsonProcessingException {
-        logger.info("Tool findFoodItemsByNames called with parameters - names: {}", names);
+    @Tool(name = "findFoodItemsByName", description = "Find food items by their name")
+    public Optional<String> findFoodItemsByName(String name) throws JsonProcessingException {
+        logger.info("Tool findFoodItemsByName called with parameters - names: {}", name);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         FoodItemList foodItemList = new FoodItemList();
         FoodItem foodItem1 = new FoodItem("code1", "chicken");
-        FoodItem foodItem2 = new FoodItem("code2", "chicken");
+        FoodItem foodItem2 = new FoodItem("code2", "tofu");
         foodItemList.setFoodItems(List.of(foodItem1, foodItem2));
 
         String structure = objectMapper.writeValueAsString(
@@ -84,11 +84,13 @@ public class FoodService {
                 Here is the data to find the food code from:
                 <data>
                 
-                And the food we are looking for are '<foods>'
+                And the food we are looking for are '<food>'
                 
-                Please don't explain your reasoning and only output the code like 'food name:code1' on each line. If you didn't find anything
-                please return '<NO_ANSWER>'.""".replace("<data>", data)
-                .replace("<foods>", names)
+                Please don't explain your reasoning and only output the code like 'food name:code1' on each line.
+                
+                IF you find multiple
+                If you didn't find anything, please return '<NO_ANSWER>'.""".replace("<data>", data)
+                .replace("<food>", name)
         );
 
         String content = ChatClient.create(this.chatModel)

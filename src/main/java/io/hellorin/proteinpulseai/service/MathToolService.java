@@ -13,9 +13,9 @@ import java.util.stream.Stream;
  * basic mathematical calculations.
  */
 @Service
-public class MathService {
+public class MathToolService {
 
-    private static final Logger logger = LoggerFactory.getLogger(MathService.class);
+    private static final Logger logger = LoggerFactory.getLogger(MathToolService.class);
 
     /**
      * Adds all the provided double numbers and returns the sum formatted to 2 decimal places.

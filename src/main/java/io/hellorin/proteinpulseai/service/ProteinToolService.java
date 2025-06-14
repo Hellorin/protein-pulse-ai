@@ -17,22 +17,14 @@ import java.io.IOException;
  * quantity calculations for food items.
  */
 @Service
-public class ProteinService {
+public class ProteinToolService {
 
-    private final ChatModel chatModel;
-    private final OpenAiChatOptions options;
     private final NutritionRepository nutritionRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(ProteinService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProteinToolService.class);
 
-    public ProteinService(ChatModel chatModel, NutritionRepository nutritionRepository) throws JAXBException, IOException {
-        this.chatModel = chatModel;
+    public ProteinToolService(NutritionRepository nutritionRepository) {
         this.nutritionRepository = nutritionRepository;
-
-        this.options = OpenAiChatOptions.builder()
-                .temperature(1.0)
-                .maxTokens(16384)
-                .build();
     }
 
     /**

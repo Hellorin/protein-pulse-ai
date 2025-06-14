@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Protein Pulse AI - Chat</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <div class="container">
+        <div>
+            <div class="header-container">
+                <img src="/img/proteinpulseai.png" alt="Protein Pulse AI Logo" class="logo">
+                <div class="header-buttons">
+                    <a href="/" class="home-button" title="Home">🏠</a>
+                    <a href="/chat" class="new-chat-button" title="New chat">+</a>
+                </div>
+            </div>
+            
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <!-- AI response -->
+                    <div th:if="${response}" class="message ai">
+                        <div th:utext="${response}"></div>
+                    </div>
+                </div>
+                
+                <div class="chat-input-container">
+                    <form th:action="@{/ask}" method="post" id="questionForm">
+                        <div class="textarea-container">
+                            <textarea
+                                id="question"
+                                name="question"
+                                rows="1"
+                                placeholder="Ask about protein content in food..."
+                                th:attr="data-conversation-finished=${conversationFinished}"
+                                th:disabled="${conversationFinished}"
+                                required
+                            ></textarea>
+                        </div>
+                        <button type="submit" id="submitButton" th:disabled="${conversationFinished}">
+                            Send
+                        </button>
+                    </form>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="loading-spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script th:src="@{/js/script.js}"></script>
+    <script th:inline="javascript">
+        // Pre-fill the question if it exists in URL parameters
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const question = urlParams.get('question');
+            const textarea = document.getElementById('question');
+            
+            if (question) {
+                textarea.value = question;
+            }
+
+            // Check if conversation is finished
+            if (textarea.dataset.conversationFinished === 'true') {
+                textarea.value = 'Chat terminated';
+            }
+
+            // Add event listener for Enter key in textarea
+            const form = document.getElementById('questionForm');
+            
+            textarea.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    form.dispatchEvent(new Event('submit'));
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
